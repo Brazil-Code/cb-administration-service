@@ -1,7 +1,6 @@
 package br.com.brazilcode.cb.administration.controller;
 
-import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.CREATED_RESPONSE;
-import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.INTERNAL_SERVER_ERROR_RESPONSE;
+import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.*;
 
 import java.io.Serializable;
 
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.brazilcode.cb.administration.dto.LogDTO;
+import br.com.brazilcode.cb.administration.exception.LogValidationException;
 import br.com.brazilcode.cb.administration.service.LogService;
 
 /**
@@ -57,6 +57,9 @@ public class LogController implements Serializable {
 		try {
 			LOGGER.debug(method + "Calling logService.save... sending: " + logDTO.toString());
 			this.logService.save(logDTO, requestContext);
+		} catch (LogValidationException e) {
+			LOGGER.debug(method + e.getMessage(), e);
+			return new ResponseEntity<>(VALIDATION_ERROR_RESPONSE + e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			LOGGER.error(method + e.getMessage(), e);
 			return new ResponseEntity<>(INTERNAL_SERVER_ERROR_RESPONSE, HttpStatus.INTERNAL_SERVER_ERROR);
