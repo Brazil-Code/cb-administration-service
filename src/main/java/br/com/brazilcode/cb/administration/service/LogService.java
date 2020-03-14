@@ -2,6 +2,7 @@ package br.com.brazilcode.cb.administration.service;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.brazilcode.cb.administration.dto.LogDTO;
 import br.com.brazilcode.cb.administration.exception.LogValidationException;
+import br.com.brazilcode.cb.libs.exception.ResourceNotFoundException;
 import br.com.brazilcode.cb.libs.model.Log;
 import br.com.brazilcode.cb.libs.repository.LogRepository;
 
@@ -129,6 +131,21 @@ public class LogService implements Serializable {
 
 		LOGGER.debug(method + "END... Returning: " + log.toString());
 		return log;
+	}
+
+	/**
+	 * Método responsável por verificar se o {@link Log} existe pelo ID informado.
+	 *
+	 * @author Brazil Code - Gabriel Guarido
+	 * @param id
+	 * @return {@link Log} caso ID seja encontrado na base de dados
+	 */
+	public Log verifyIfExists(Long id) {
+		Optional<Log> log = logDAO.findById(id);
+		if (!log.isPresent())
+			throw new ResourceNotFoundException("Log not found for the given ID: " + id);
+
+		return log.get();
 	}
 
 }
