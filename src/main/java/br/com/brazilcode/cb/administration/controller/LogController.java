@@ -1,6 +1,8 @@
 package br.com.brazilcode.cb.administration.controller;
 
-import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.*;
+import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.CREATED_RESPONSE;
+import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.INTERNAL_SERVER_ERROR_RESPONSE;
+import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.VALIDATION_ERROR_RESPONSE;
 
 import java.io.Serializable;
 
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.brazilcode.cb.administration.dto.LogDTO;
 import br.com.brazilcode.cb.administration.exception.LogValidationException;
 import br.com.brazilcode.cb.administration.service.LogService;
+import br.com.brazilcode.cb.libs.model.Log;
 
 /**
  * Classe responsável por expor as APIs para Logs.
@@ -39,6 +44,19 @@ public class LogController implements Serializable {
 
 	@Autowired
 	private LogService logService;
+
+	/**
+	 * Método responsável por buscar um {@link Log}.
+	 *
+	 * @author Brazil Code - Gabriel Guarido
+	 * @param id
+	 * @return
+	 */
+	@GetMapping(path = "{id}")
+	public ResponseEntity<?> findById(@PathVariable("id") final Long id) {
+		final Log log = logService.verifyIfExists(id);
+		return new ResponseEntity<>(log, HttpStatus.OK);
+	}
 
 	/**
 	 * Método responsável por salvar um Log.
