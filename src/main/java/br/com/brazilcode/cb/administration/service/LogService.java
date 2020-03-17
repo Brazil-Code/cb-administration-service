@@ -46,8 +46,8 @@ public class LogService implements Serializable {
 	 * @param requestContext
 	 * @throws Exception
 	 */
-	public void save(LogDTO logDTO, HttpServletRequest requestContext) throws Exception {
-		String method = "[ LogService.save ] - ";
+	public Log save(LogDTO logDTO, HttpServletRequest requestContext) throws Exception {
+		final String method = "[ LogService.save ] - ";
 		LOGGER.debug(method + "BEGIN");
 
 		try {
@@ -62,13 +62,13 @@ public class LogService implements Serializable {
 			log.setIp(ipAdressRequest);
 
 			LOGGER.debug(method + "Saving: " + log.toString());
-			this.logDAO.save(log);
+			return this.logDAO.save(log);
 		} catch (Exception e) {
 			LOGGER.error(method + e.getMessage(), e);
 			throw e;
+		} finally {
+			LOGGER.debug(method + "END");
 		}
-
-		LOGGER.debug(method + "END");
 	}
 
 	/**
@@ -78,29 +78,29 @@ public class LogService implements Serializable {
 	 * @param {@link LogDTO}
 	 */
 	public void validateMandatoryFields(LogDTO logDTO) throws LogValidationException {
-		String method = "[ LogService.validateMandatoryFields ] - ";
+		final String method = "[ LogService.validateMandatoryFields ] - ";
 		LOGGER.debug(method + "BEGIN");
 
 		StringBuilder warnings = new StringBuilder();
 
 		if (logDTO != null) {
 			if (logDTO.getUser() == null) {
-				warnings.append("\nField \'user\' cannot be null.");
+				warnings.append(", Field \'user\' cannot be null.");
 			}
 
 			if (StringUtils.isBlank(logDTO.getDescription())) {
-				warnings.append("\nField \'description\' cannot be null.");
+				warnings.append(", Field \'description\' cannot be null.");
 			}
 
 			if (StringUtils.isBlank(logDTO.getTimestamp())) {
-				warnings.append("\nField \'timestamp\' cannot be null.");
+				warnings.append(", Field \'timestamp\' cannot be null.");
 			}
 		} else {
-			warnings.append("\nObject Log cannot be null");
+			warnings.append(", Object Log cannot be null");
 		}
 
 		if (warnings.length() > 1) {
-			LOGGER.error(method + "Validation warnings: " + warnings.toString());
+			LOGGER.error(method + "Validation warnings" + warnings.toString());
 			throw new LogValidationException(warnings.toString());
 		}
 
@@ -115,7 +115,7 @@ public class LogService implements Serializable {
 	 * @return {@link Log} com os atributos preenchidos com os dados do objeto DTO
 	 */
 	public Log convertDtoToEntity(LogDTO logDTO) {
-		String method = "[ LogService.convertDtoToEntity ] - ";
+		final String method = "[ LogService.convertDtoToEntity ] - ";
 		LOGGER.debug(method + "BEGIN");
 
 		Log log = new Log();
