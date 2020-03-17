@@ -1,7 +1,5 @@
 package br.com.brazilcode.cb.administration.controller;
 
-import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.CREATED_RESPONSE;
-import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.INTERNAL_SERVER_ERROR_RESPONSE;
 import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.VALIDATION_ERROR_RESPONSE;
 
 import java.io.Serializable;
@@ -26,6 +24,8 @@ import br.com.brazilcode.cb.administration.dto.LogDTO;
 import br.com.brazilcode.cb.administration.exception.LogValidationException;
 import br.com.brazilcode.cb.administration.service.LogService;
 import br.com.brazilcode.cb.libs.model.Log;
+import br.com.brazilcode.cb.libs.model.response.BadRequestResponseObject;
+import br.com.brazilcode.cb.libs.model.response.CreatedResponseObject;
 
 /**
  * Classe responsável por expor as APIs para Logs.
@@ -69,22 +69,25 @@ public class LogController implements Serializable {
 	@PostMapping
 	@Transactional(rollbackFor = Exception.class)
 	public ResponseEntity<?> save(HttpServletRequest requestContext, @Valid @RequestBody final LogDTO logDTO) {
-		String method = "[ LogController.save ] - ";
+		final String method = "[ LogController.save ] - ";
 		LOGGER.debug(method + "BEGIN");
 
 		try {
 			LOGGER.debug(method + "Calling logService.save... sending: " + logDTO.toString());
-			this.logService.save(logDTO, requestContext);
-		} catch (LogValidationException e) {
-			LOGGER.debug(method + e.getMessage(), e);
-			return new ResponseEntity<>(VALIDATION_ERROR_RESPONSE + e.getMessage(), HttpStatus.BAD_REQUEST);
-		} catch (Exception e) {
-			LOGGER.error(method + e.getMessage(), e);
-			return new ResponseEntity<>(INTERNAL_SERVER_ERROR_RESPONSE, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+			Log log = this.logService.save(logDTO, requestContext);
 
-		LOGGER.debug(method + "END");
-		return new ResponseEntity<>(CREATED_RESPONSE, HttpStatus.CREATED);
+			return new ResponseEntity<>(new CreatedResponseObject(log.getId()), HttpStatus.CREATED);
+		} catch (LogValidationException e) {
+			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
+			LOGGER.debug(method + errorMessage, e);
+			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
+			LOGGER.debug(method + errorMessage, e);
+			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+		} finally {
+			LOGGER.debug(method + "END");
+		}
 	}
 
 }
