@@ -143,7 +143,7 @@ public class LogService implements Serializable {
 	public Log verifyIfExists(Long id) {
 		Optional<Log> log = logDAO.findById(id);
 		if (!log.isPresent())
-			throw new ResourceNotFoundException("Log not found for the given ID: " + id);
+			throw new ResourceNotFoundException(", Log not found for the given ID: " + id);
 
 		return log.get();
 	}
