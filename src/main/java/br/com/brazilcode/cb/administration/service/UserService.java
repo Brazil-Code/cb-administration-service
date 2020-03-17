@@ -32,7 +32,7 @@ public class UserService {
 	public User verifyIfExists(Long id) {
 		final Optional<User> user = userDAO.findById(id);
 		if (!user.isPresent())
-			throw new ResourceNotFoundException("User not found for the given ID: " + id);
+			throw new ResourceNotFoundException(", User not found for the given ID: " + id);
 
 		return user.get();
 	}
