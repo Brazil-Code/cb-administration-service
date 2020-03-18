@@ -1,5 +1,7 @@
 package br.com.brazilcode.cb.administration.controller;
 
+import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.VALIDATION_ERROR_RESPONSE;
+
 import java.io.Serializable;
 
 import org.slf4j.Logger;
@@ -53,8 +55,9 @@ public class UserController implements Serializable {
 
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
-			LOGGER.error(method + e.getMessage(), e);
-			throw e;
+			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
+			LOGGER.error(method + errorMessage, e);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		} finally {
 			LOGGER.debug(method + "END");
 		}
