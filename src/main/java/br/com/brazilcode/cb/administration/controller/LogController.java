@@ -24,15 +24,15 @@ import br.com.brazilcode.cb.administration.dto.LogDTO;
 import br.com.brazilcode.cb.administration.exception.LogValidationException;
 import br.com.brazilcode.cb.administration.service.LogService;
 import br.com.brazilcode.cb.libs.model.Log;
-import br.com.brazilcode.cb.libs.model.response.BadRequestResponseObject;
-import br.com.brazilcode.cb.libs.model.response.CreatedResponseObject;
+import br.com.brazilcode.cb.libs.model.api.response.BadRequestResponseObject;
+import br.com.brazilcode.cb.libs.model.api.response.CreatedResponseObject;
 
 /**
  * Classe responsável por expor as APIs para Logs.
  *
  * @author Brazil Code - Gabriel Guarido
  * @since 11 de mar de 2020 23:10:05
- * @version 1.0
+ * @version 1.1
  */
 @RestController
 @RequestMapping("logs")
@@ -53,9 +53,9 @@ public class LogController implements Serializable {
 	 * @return
 	 */
 	@GetMapping(path = "{id}")
-	public ResponseEntity<?> findById(@PathVariable("id") final Long id) {
+	public ResponseEntity<Log> findById(@PathVariable("id") final Long id) {
 		final Log log = logService.verifyIfExists(id);
-		return new ResponseEntity<>(log, HttpStatus.OK);
+		return new ResponseEntity<Log>(log, HttpStatus.OK);
 	}
 
 	/**
