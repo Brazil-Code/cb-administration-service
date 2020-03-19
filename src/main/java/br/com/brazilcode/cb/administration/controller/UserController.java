@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.brazilcode.cb.administration.service.UserService;
@@ -56,6 +57,26 @@ public class UserController implements Serializable {
 			final String errorMessage = e.getMessage();
 			LOGGER.error(method + errorMessage, e);
 			return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+		} finally {
+			LOGGER.debug(method + "END");
+		}
+	}
+
+	@GetMapping
+	public ResponseEntity<?> findByUsername(@RequestParam(name = "username", required = true) final String username) {
+		final String method = "[ UserController.findByUsername ] - ";
+		LOGGER.debug(method + "BEGIN");
+		LOGGER.debug(method + "received Username: " + username);
+
+		try {
+			LOGGER.debug(method + "Calling userService.findByUsername");
+			User user = this.userService.findByUsername(username);
+
+			return new ResponseEntity<User>(user, HttpStatus.OK);
+		} catch (Exception e) {
+			final String errorMessage = e.getMessage();
+			LOGGER.error(method + errorMessage, e);
+			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
 			LOGGER.debug(method + "END");
 		}

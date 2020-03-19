@@ -2,7 +2,6 @@ package br.com.brazilcode.cb.administration.service;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import br.com.brazilcode.cb.administration.dto.LogDTO;
 import br.com.brazilcode.cb.administration.exception.LogValidationException;
+import br.com.brazilcode.cb.libs.dto.LogDTO;
 import br.com.brazilcode.cb.libs.exception.ResourceNotFoundException;
 import br.com.brazilcode.cb.libs.model.Log;
 import br.com.brazilcode.cb.libs.repository.LogRepository;
@@ -46,6 +47,7 @@ public class LogService implements Serializable {
 	 * @param requestContext
 	 * @throws Exception
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public Log save(LogDTO logDTO, HttpServletRequest requestContext) throws Exception {
 		final String method = "[ LogService.save ] - ";
 		LOGGER.debug(method + "BEGIN");
@@ -141,11 +143,10 @@ public class LogService implements Serializable {
 	 * @return {@link Log} caso ID seja encontrado na base de dados
 	 */
 	public Log verifyIfExists(Long id) {
-		Optional<Log> log = logDAO.findById(id);
-		if (!log.isPresent())
-			throw new ResourceNotFoundException(", Log not found for the given ID: " + id);
+		final Log log = logDAO.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(", Log not found for the given ID: " + id));
 
-		return log.get();
+		return log;
 	}
 
 }

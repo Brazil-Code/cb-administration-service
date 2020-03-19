@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.brazilcode.cb.administration.dto.LogDTO;
 import br.com.brazilcode.cb.administration.exception.LogValidationException;
 import br.com.brazilcode.cb.administration.service.LogService;
+import br.com.brazilcode.cb.libs.dto.LogDTO;
+import br.com.brazilcode.cb.libs.exception.ResourceNotFoundException;
 import br.com.brazilcode.cb.libs.model.Log;
 import br.com.brazilcode.cb.libs.model.api.response.BadRequestResponseObject;
 import br.com.brazilcode.cb.libs.model.api.response.CreatedResponseObject;
+import br.com.brazilcode.cb.libs.model.api.response.InternalServerErrorResponseObject;
 
 /**
  * Classe responsável por expor as APIs para Logs.
@@ -53,9 +54,25 @@ public class LogController implements Serializable {
 	 * @return
 	 */
 	@GetMapping(path = "{id}")
-	public ResponseEntity<Log> findById(@PathVariable("id") final Long id) {
-		final Log log = logService.verifyIfExists(id);
-		return new ResponseEntity<Log>(log, HttpStatus.OK);
+	public ResponseEntity<?> findById(@PathVariable("id") final Long id) {
+		final String method = "[ LogController.findById ] - ";
+		LOGGER.debug(method + "BEGIN");
+
+		try {
+			LOGGER.debug(method + "Calling logService.verifyIfExists - ID: " + id);
+			final Log log = logService.verifyIfExists(id);
+
+			return new ResponseEntity<Log>(log, HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
+			LOGGER.error(method + errorMessage, e);
+			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			LOGGER.error(method + e.getMessage(), e);
+			return new ResponseEntity<>(new InternalServerErrorResponseObject(), HttpStatus.INTERNAL_SERVER_ERROR);
+		} finally {
+			LOGGER.debug(method + "END");
+		}
 	}
 
 	/**
@@ -67,7 +84,6 @@ public class LogController implements Serializable {
 	 * @return
 	 */
 	@PostMapping
-	@Transactional(rollbackFor = Exception.class)
 	public ResponseEntity<?> save(HttpServletRequest requestContext, @Valid @RequestBody final LogDTO logDTO) {
 		final String method = "[ LogController.save ] - ";
 		LOGGER.debug(method + "BEGIN");

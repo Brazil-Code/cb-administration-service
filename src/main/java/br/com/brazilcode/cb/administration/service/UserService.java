@@ -12,7 +12,7 @@ import br.com.brazilcode.cb.libs.repository.UserRepository;
  *
  * @author Brazil Code - Gabriel Guarido
  * @since 12 de mar de 2020 00:10:08
- * @version 1.1
+ * @version 1.2
  */
 @Service
 public class UserService {
@@ -32,6 +32,17 @@ public class UserService {
 				.orElseThrow(() -> new ResourceNotFoundException("User not found for the given ID: " + id));
 
 		return user;
+	}
+
+	/**
+	 * Método responsável por buscar um User pelo seu username.
+	 *
+	 * @author Brazil Code - Gabriel Guarido
+	 * @param username
+	 * @return
+	 */
+	public User findByUsername(String username) {
+		return this.userDAO.findByUsername(username);
 	}
 
 }
