@@ -28,10 +28,7 @@ public class UserService {
 	 * @return
 	 */
 	public User verifyIfExists(Long id) throws ResourceNotFoundException {
-		final User user = userDAO.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found for the given ID: " + id));
-
-		return user;
+		return userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException(", User not found for the given ID: " + id));
 	}
 
 	/**
@@ -41,8 +38,9 @@ public class UserService {
 	 * @param username
 	 * @return
 	 */
-	public User findByUsername(String username) {
-		return this.userDAO.findByUsername(username);
+	public User findByUsername(String username) throws ResourceNotFoundException {
+		return this.userDAO.findByUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException(", User not found for the given username: " + username));
 	}
 
 }
