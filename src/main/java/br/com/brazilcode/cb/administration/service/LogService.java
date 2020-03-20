@@ -143,10 +143,7 @@ public class LogService implements Serializable {
 	 * @return {@link Log} caso ID seja encontrado na base de dados
 	 */
 	public Log verifyIfExists(Long id) {
-		final Log log = logDAO.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(", Log not found for the given ID: " + id));
-
-		return log;
+		return logDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException(", Log not found for the given ID: " + id));
 	}
 
 }
