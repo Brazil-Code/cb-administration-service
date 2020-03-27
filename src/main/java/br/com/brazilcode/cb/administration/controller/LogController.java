@@ -61,11 +61,11 @@ public class LogController implements Serializable {
 	 * @return
 	 */
 	@GetMapping(path = "{id}")
-	@ApiResponses(value = {
+	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "Return a Log"),
 			@ApiResponse(code = 400, message = "Log not found for the given ID"),
 			@ApiResponse(code = 500, message = "Unexpected internal error")
-	})
+		})
 	@ApiOperation(value = "Search for a Log in database with the given ID")
 	public ResponseEntity<?> findById(@PathVariable("id") final Long id) {
 		final String method = "[ LogController.findById ] - ";
@@ -74,6 +74,8 @@ public class LogController implements Serializable {
 		try {
 			LOGGER.debug(method + "Calling logService.verifyIfExists - ID: " + id);
 			final Log log = logService.verifyIfExists(id);
+
+			// TODO: Register Log
 
 			return new ResponseEntity<Log>(log, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
@@ -97,11 +99,11 @@ public class LogController implements Serializable {
 	 * @return
 	 */
 	@PostMapping
-	@ApiResponses(value = {
+	@ApiResponses(value = { 
 			@ApiResponse(code = 201, message = "Return the ID of the created Log"),
 			@ApiResponse(code = 400, message = "Validation Error"),
-			@ApiResponse(code = 500, message = "Unexpected internal error")
-	})
+			@ApiResponse(code = 500, message = "Unexpected internal error") 
+		})
 	@ApiOperation(value = "Register a new Log")
 	public ResponseEntity<?> save(HttpServletRequest requestContext, @Valid @RequestBody final LogDTO logDTO) {
 		final String method = "[ LogController.save ] - ";
@@ -110,6 +112,8 @@ public class LogController implements Serializable {
 		try {
 			LOGGER.debug(method + "Calling logService.save... sending: " + logDTO.toString());
 			Log log = this.logService.save(logDTO, requestContext);
+
+			// TODO: Register Log
 
 			return new ResponseEntity<>(new CreatedResponseObject(log.getId()), HttpStatus.CREATED);
 		} catch (LogValidationException e) {

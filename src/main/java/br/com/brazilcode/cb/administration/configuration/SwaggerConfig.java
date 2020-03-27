@@ -62,7 +62,7 @@ public class SwaggerConfig {
 	private SecurityContext securityContext() {
 	    return SecurityContext.builder()
 	        .securityReferences(defaultAuth())
-	        .forPaths(PathSelectors.ant("/purchase-request/**"))
+	        .forPaths(PathSelectors.any())
 	        .build();
 	}
 

@@ -54,7 +54,8 @@ public class UserController implements Serializable {
 	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "Return a User"),
 			@ApiResponse(code = 404, message = "User not found for the given ID"),
-			@ApiResponse(code = 500, message = "Unexpected internal error") })
+			@ApiResponse(code = 500, message = "Unexpected internal error") 
+		})
 	@ApiOperation(value = "Search for a User in database with the given ID")
 	public ResponseEntity<?> verifyIfExist(@PathVariable("id") final Long id) {
 		final String method = "[ UserController.verifyIfExist ] - ";
@@ -64,6 +65,8 @@ public class UserController implements Serializable {
 		try {
 			LOGGER.debug(method + "Calling userService.verifyIfExists");
 			User user = this.userService.verifyIfExists(id);
+
+			// TODO: Register Log
 
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
@@ -82,7 +85,8 @@ public class UserController implements Serializable {
 	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "Return a User"),
 			@ApiResponse(code = 404, message = "User not found for the given username"),
-			@ApiResponse(code = 500, message = "Unexpected internal error") })
+			@ApiResponse(code = 500, message = "Unexpected internal error") 
+		})
 	@ApiOperation(value = "Search for a User in database with the given username")
 	public ResponseEntity<?> findByUsername(@RequestParam(name = "username", required = true) final String username) {
 		final String method = "[ UserController.findByUsername ] - ";
@@ -93,6 +97,8 @@ public class UserController implements Serializable {
 			LOGGER.debug(method + "Calling userService.findByUsername");
 			User user = this.userService.findByUsername(username);
 
+			// TODO: Register Log
+			
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			final String errorMessage = e.getMessage();
