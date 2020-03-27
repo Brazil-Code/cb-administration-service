@@ -79,7 +79,7 @@ public class LogService implements Serializable {
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param {@link LogDTO}
 	 */
-	public void validateMandatoryFields(LogDTO logDTO) throws LogValidationException {
+	private void validateMandatoryFields(LogDTO logDTO) throws LogValidationException {
 		final String method = "[ LogService.validateMandatoryFields ] - ";
 		LOGGER.debug(method + "BEGIN");
 
@@ -116,7 +116,7 @@ public class LogService implements Serializable {
 	 * @param {@link LogDTO}
 	 * @return {@link Log} com os atributos preenchidos com os dados do objeto DTO
 	 */
-	public Log convertDtoToEntity(LogDTO logDTO) {
+	private Log convertDtoToEntity(LogDTO logDTO) {
 		final String method = "[ LogService.convertDtoToEntity ] - ";
 		LOGGER.debug(method + "BEGIN");
 
