@@ -1,6 +1,11 @@
 package br.com.brazilcode.cb.administration.controller;
 
+import static br.com.brazilcode.cb.libs.constants.ApiResponseConstants.VALIDATION_ERROR_RESPONSE;
+
 import java.io.Serializable;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,14 +15,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.brazilcode.cb.administration.dto.UserDTO;
+import br.com.brazilcode.cb.administration.exception.UniqueContraintValidationException;
+import br.com.brazilcode.cb.administration.exception.UserValidationException;
 import br.com.brazilcode.cb.administration.service.UserService;
 import br.com.brazilcode.cb.libs.exception.ResourceNotFoundException;
 import br.com.brazilcode.cb.libs.model.User;
+import br.com.brazilcode.cb.libs.model.api.response.BadRequestResponseObject;
 import br.com.brazilcode.cb.libs.model.api.response.InternalServerErrorResponseObject;
+import br.com.brazilcode.cb.libs.model.api.response.UpdatedResponseObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -28,7 +40,7 @@ import io.swagger.annotations.ApiResponses;
  *
  * @author Brazil Code - Gabriel Guarido
  * @since 17 de mar de 2020 22:19:49
- * @version 1.0
+ * @version 1.2
  */
 @RestController
 @RequestMapping("users")
@@ -57,7 +69,7 @@ public class UserController implements Serializable {
 			@ApiResponse(code = 500, message = "Unexpected internal error") 
 		})
 	@ApiOperation(value = "Search for a User in database with the given ID")
-	public ResponseEntity<?> verifyIfExist(@PathVariable("id") final Long id) {
+	public ResponseEntity<?> verifyIfExist(HttpServletRequest requestContext, @PathVariable("id") final Long id) {
 		final String method = "[ UserController.verifyIfExist ] - ";
 		LOGGER.debug(method + "BEGIN");
 		LOGGER.debug(method + "received ID: " + id);
@@ -66,13 +78,11 @@ public class UserController implements Serializable {
 			LOGGER.debug(method + "Calling userService.verifyIfExists");
 			User user = this.userService.verifyIfExists(id);
 
-			// TODO: Register Log
-
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
-			final String errorMessage = e.getMessage();
+			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
 			LOGGER.error(method + errorMessage, e);
-			return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			LOGGER.error(method + e.getMessage(), e);
 			return new ResponseEntity<>(new InternalServerErrorResponseObject(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -97,17 +107,46 @@ public class UserController implements Serializable {
 			LOGGER.debug(method + "Calling userService.findByUsername");
 			User user = this.userService.findByUsername(username);
 
-			// TODO: Register Log
-			
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
-			final String errorMessage = e.getMessage();
+			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
 			LOGGER.error(method + errorMessage, e);
-			return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			final String errorMessage = e.getMessage();
+			LOGGER.error(method + e.getMessage(), e);
+			return new ResponseEntity<>(new InternalServerErrorResponseObject(), HttpStatus.INTERNAL_SERVER_ERROR);
+		} finally {
+			LOGGER.debug(method + "END");
+		}
+	}
+
+	@PutMapping(path = "{id}")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "User updated successfully"),
+			@ApiResponse(code = 404, message = "User not found for the given username"),
+			@ApiResponse(code = 500, message = "Unexpected internal error") 
+		})
+	@ApiOperation(value = "Update user")
+	public ResponseEntity<?> update(@PathVariable("id") final Long id, @Valid @RequestBody final UserDTO userDTO) {
+		final String method = "[ UserController.update ] - ";
+		LOGGER.debug(method + "BEGIN");
+
+		try {
+			LOGGER.debug(method + "Calling userService.update");
+			this.userService.update(id, userDTO);
+
+			return new ResponseEntity<>(new UpdatedResponseObject(id), HttpStatus.OK);
+		} catch (UserValidationException e) {
+			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
 			LOGGER.error(method + errorMessage, e);
-			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
+		} catch (UniqueContraintValidationException e) {
+			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
+			LOGGER.error(method + errorMessage, e);
+			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			LOGGER.error(method + e.getMessage(), e);
+			return new ResponseEntity<>(new InternalServerErrorResponseObject(), HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
 			LOGGER.debug(method + "END");
 		}
