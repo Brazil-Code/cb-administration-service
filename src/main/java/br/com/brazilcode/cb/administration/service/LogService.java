@@ -77,7 +77,8 @@ public class LogService implements Serializable {
 	 * Método responsável por validar os campos obrigatórios para {@link LogDTO}.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
-	 * @param {@link LogDTO}
+	 * @param logDTO
+	 * @throws LogValidationException
 	 */
 	private void validateMandatoryFields(LogDTO logDTO) throws LogValidationException {
 		final String method = "[ LogService.validateMandatoryFields ] - ";

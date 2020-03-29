@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiResponses;
  *
  * @author Brazil Code - Gabriel Guarido
  * @since 11 de mar de 2020 23:10:05
- * @version 1.1
+ * @version 1.2
  */
 @RestController
 @RequestMapping("logs")
@@ -75,8 +75,6 @@ public class LogController implements Serializable {
 			LOGGER.debug(method + "Calling logService.verifyIfExists - ID: " + id);
 			final Log log = logService.verifyIfExists(id);
 
-			// TODO: Register Log
-
 			return new ResponseEntity<Log>(log, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
@@ -112,8 +110,6 @@ public class LogController implements Serializable {
 		try {
 			LOGGER.debug(method + "Calling logService.save... sending: " + logDTO.toString());
 			Log log = this.logService.save(logDTO, requestContext);
-
-			// TODO: Register Log
 
 			return new ResponseEntity<>(new CreatedResponseObject(log.getId()), HttpStatus.CREATED);
 		} catch (LogValidationException e) {
