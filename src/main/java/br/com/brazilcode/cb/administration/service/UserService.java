@@ -22,7 +22,7 @@ import br.com.brazilcode.cb.libs.repository.UserRepository;
  *
  * @author Brazil Code - Gabriel Guarido
  * @since 12 de mar de 2020 00:10:08
- * @version 1.3
+ * @version 1.4
  */
 @Service
 public class UserService implements Serializable {
@@ -102,14 +102,14 @@ public class UserService implements Serializable {
 			User currentUser = this.verifyIfExists(id);
 			User updatedUser;
 
-			LOGGER.debug(method + "Verifying if username / email have already been taken");
+			LOGGER.debug(method + "Verifying if email have already been taken");
 			if (!this.emailHasAlreadyBeenTaken(currentUser.getEmail(), userDTO.getEmail())) {
 				LOGGER.debug(method + "Converting DTO to entity");
 				updatedUser = this.convertDtoToEntity(currentUser, userDTO);
 
 				return updatedUser;
 			} else {
-				throw new UniqueContraintValidationException(", Username or E-mail have already been taken");
+				throw new UniqueContraintValidationException(", The given e-mail has already been taken");
 			}
 		} catch (Exception e) {
 			LOGGER.error(method + e.getMessage(), e);
@@ -120,9 +120,11 @@ public class UserService implements Serializable {
 	}
 
 	/**
-	 * Método responsável por validar os campos obrigatórios.
+	 * Método responsável por validar os campos obrigatórios para atualização de um {@link User}.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
+	 * @param userDTO
+	 * @throws UserValidationException
 	 */
 	private void validateMandatoryFields(UserDTO userDTO) throws UserValidationException {
 		final String method = "[ UserService.validateMandatoryFields ] - ";
