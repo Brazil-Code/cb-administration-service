@@ -1,6 +1,7 @@
 package br.com.brazilcode.cb.administration.dto;
 
 import br.com.brazilcode.cb.libs.model.User;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Classe responsável por agrupar informações sobre {@link User}.
@@ -11,8 +12,13 @@ import br.com.brazilcode.cb.libs.model.User;
  */
 public class UserDTO {
 
+	@ApiModelProperty(value = "User's first name")
 	private String firstName;
+
+	@ApiModelProperty(value = "User's last name")
 	private String lastName;
+
+	@ApiModelProperty(value = "User's e-mail")
 	private String email;
 
 	public String getFirstName() {
