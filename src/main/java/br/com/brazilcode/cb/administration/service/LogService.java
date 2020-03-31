@@ -48,7 +48,7 @@ public class LogService implements Serializable {
 	 * @throws Exception
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public Log save(LogDTO logDTO, HttpServletRequest requestContext) throws Exception {
+	public Log save(LogDTO logDTO, HttpServletRequest request) throws Exception {
 		final String method = "[ LogService.save ] - ";
 		LOGGER.debug(method + "BEGIN");
 
@@ -60,7 +60,7 @@ public class LogService implements Serializable {
 			Log log = this.convertDtoToEntity(logDTO);
 
 			LOGGER.debug(method + "Getting request IP");
-			final String ipAdressRequest = requestContext.getRemoteAddr();
+			final String ipAdressRequest = request.getRemoteAddr();
 			log.setIp(ipAdressRequest);
 
 			LOGGER.debug(method + "Saving: " + log.toString());
@@ -93,10 +93,6 @@ public class LogService implements Serializable {
 
 			if (StringUtils.isBlank(logDTO.getDescription())) {
 				warnings.append(", Field \'description\' cannot be null.");
-			}
-
-			if (StringUtils.isBlank(logDTO.getTimestamp())) {
-				warnings.append(", Field \'timestamp\' cannot be null.");
 			}
 		} else {
 			warnings.append(", Object Log cannot be null");

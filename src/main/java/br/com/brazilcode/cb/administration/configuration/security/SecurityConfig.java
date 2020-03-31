@@ -1,4 +1,4 @@
-package br.com.brazilcode.cb.administration.configuration;
+package br.com.brazilcode.cb.administration.configuration.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
