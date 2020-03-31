@@ -24,7 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.brazilcode.cb.administration.dto.UserDTO;
 import br.com.brazilcode.cb.administration.exception.UniqueContraintValidationException;
 import br.com.brazilcode.cb.administration.exception.UserValidationException;
+import br.com.brazilcode.cb.administration.service.LogService;
 import br.com.brazilcode.cb.administration.service.UserService;
+import br.com.brazilcode.cb.libs.dto.LogDTO;
+import br.com.brazilcode.cb.libs.enumerator.LogActivityTypeEnum;
 import br.com.brazilcode.cb.libs.exception.ResourceNotFoundException;
 import br.com.brazilcode.cb.libs.model.User;
 import br.com.brazilcode.cb.libs.model.api.response.BadRequestResponseObject;
@@ -55,6 +58,9 @@ public class UserController implements Serializable {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private LogService logService;
+
 	/**
 	 * Método responsável por verificar se o ID do usuário informado está cadastrado no banco de dados.
 	 *
@@ -65,7 +71,7 @@ public class UserController implements Serializable {
 	@GetMapping(path = "{id}")
 	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "Return a User"),
-			@ApiResponse(code = 404, message = "User not found for the given ID"),
+			@ApiResponse(code = 400, message = "User not found for the given ID"),
 			@ApiResponse(code = 500, message = "Unexpected internal error") 
 		})
 	@ApiOperation(value = "Search for a User in database with the given ID")
@@ -91,10 +97,17 @@ public class UserController implements Serializable {
 		}
 	}
 
+	/**
+	 * Método responsável por buscar um {@link User} no banco de dados, filtrando pelo username informado.
+	 *
+	 * @author Brazil Code - Gabriel Guarido
+	 * @param username
+	 * @return
+	 */
 	@GetMapping
 	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "Return a User"),
-			@ApiResponse(code = 404, message = "User not found for the given username"),
+			@ApiResponse(code = 400, message = "User not found for the given username"),
 			@ApiResponse(code = 500, message = "Unexpected internal error") 
 		})
 	@ApiOperation(value = "Search for a User in database with the given username")
@@ -120,20 +133,35 @@ public class UserController implements Serializable {
 		}
 	}
 
+	/**
+	 * Método responsável por atualizar as informações de um {@link User} pelo ID e dados informados.
+	 *
+	 * @author Brazil Code - Gabriel Guarido
+	 * @param id
+	 * @param userDTO
+	 * @param request
+	 * @return
+	 */
 	@PutMapping(path = "{id}")
 	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "User updated successfully"),
-			@ApiResponse(code = 404, message = "User not found for the given username"),
+			@ApiResponse(code = 400, message = "User not found for the given username"),
 			@ApiResponse(code = 500, message = "Unexpected internal error") 
 		})
 	@ApiOperation(value = "Update user")
-	public ResponseEntity<?> update(@PathVariable("id") final Long id, @Valid @RequestBody final UserDTO userDTO) {
+	public ResponseEntity<?> update(@PathVariable("id") final Long id, @Valid @RequestBody final UserDTO userDTO, 
+			HttpServletRequest request) {
 		final String method = "[ UserController.update ] - ";
 		LOGGER.debug(method + "BEGIN");
 
 		try {
 			LOGGER.debug(method + "Calling userService.update");
 			this.userService.update(id, userDTO);
+
+			LOGGER.debug(method + "Registering activity log");
+			final String description = LogActivityTypeEnum.UPDATE.getDescription() + " as informações do seu perfil";
+			LogDTO logDTO = new LogDTO(id, description);
+			this.logService.save(logDTO, request);
 
 			return new ResponseEntity<>(new UpdatedResponseObject(id), HttpStatus.OK);
 		} catch (UserValidationException e) {
