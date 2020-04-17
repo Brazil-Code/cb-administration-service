@@ -2,7 +2,6 @@ package br.com.brazilcode.cb.administration.service;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import br.com.brazilcode.cb.administration.dto.LogDTO;
 import br.com.brazilcode.cb.administration.exception.LogValidationException;
+import br.com.brazilcode.cb.libs.dto.LogDTO;
 import br.com.brazilcode.cb.libs.exception.ResourceNotFoundException;
 import br.com.brazilcode.cb.libs.model.Log;
 import br.com.brazilcode.cb.libs.repository.LogRepository;
@@ -46,7 +47,8 @@ public class LogService implements Serializable {
 	 * @param requestContext
 	 * @throws Exception
 	 */
-	public Log save(LogDTO logDTO, HttpServletRequest requestContext) throws Exception {
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public Log save(LogDTO logDTO, HttpServletRequest request) throws Exception {
 		final String method = "[ LogService.save ] - ";
 		LOGGER.debug(method + "BEGIN");
 
@@ -58,7 +60,7 @@ public class LogService implements Serializable {
 			Log log = this.convertDtoToEntity(logDTO);
 
 			LOGGER.debug(method + "Getting request IP");
-			final String ipAdressRequest = requestContext.getRemoteAddr();
+			final String ipAdressRequest = request.getRemoteAddr();
 			log.setIp(ipAdressRequest);
 
 			LOGGER.debug(method + "Saving: " + log.toString());
@@ -75,9 +77,10 @@ public class LogService implements Serializable {
 	 * Método responsável por validar os campos obrigatórios para {@link LogDTO}.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
-	 * @param {@link LogDTO}
+	 * @param logDTO
+	 * @throws LogValidationException
 	 */
-	public void validateMandatoryFields(LogDTO logDTO) throws LogValidationException {
+	private void validateMandatoryFields(LogDTO logDTO) throws LogValidationException {
 		final String method = "[ LogService.validateMandatoryFields ] - ";
 		LOGGER.debug(method + "BEGIN");
 
@@ -90,10 +93,6 @@ public class LogService implements Serializable {
 
 			if (StringUtils.isBlank(logDTO.getDescription())) {
 				warnings.append(", Field \'description\' cannot be null.");
-			}
-
-			if (StringUtils.isBlank(logDTO.getTimestamp())) {
-				warnings.append(", Field \'timestamp\' cannot be null.");
 			}
 		} else {
 			warnings.append(", Object Log cannot be null");
@@ -114,7 +113,7 @@ public class LogService implements Serializable {
 	 * @param {@link LogDTO}
 	 * @return {@link Log} com os atributos preenchidos com os dados do objeto DTO
 	 */
-	public Log convertDtoToEntity(LogDTO logDTO) {
+	private Log convertDtoToEntity(LogDTO logDTO) {
 		final String method = "[ LogService.convertDtoToEntity ] - ";
 		LOGGER.debug(method + "BEGIN");
 
@@ -141,11 +140,7 @@ public class LogService implements Serializable {
 	 * @return {@link Log} caso ID seja encontrado na base de dados
 	 */
 	public Log verifyIfExists(Long id) {
-		Optional<Log> log = logDAO.findById(id);
-		if (!log.isPresent())
-			throw new ResourceNotFoundException(", Log not found for the given ID: " + id);
-
-		return log.get();
+		return logDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException(", Log not found for the given ID: " + id));
 	}
 
 }
