@@ -1,15 +1,19 @@
-# cb-administration-service
-Administration module of the Clean Budget project
+<h2 align="center">
+  CB-ADMINISTRATION-SERVICE :clipboard:
+</h2>
 
-## Technologies
+## :computer: Technologies
 * Java 8
 * Spring Framework (Boot, Security, ect)
 * RESTful APIs
 
-## Developers
+## :alien: Developers
 1. Gabriel Guarido
 
-## Release Notes
-| Starting Date | Last Deploy | Version |
+## :calendar: Release Notes
+| :rocket: Kick Off | Last Deploy | Version |
 |---|---|---|
 | Feb 29 2020 | Mar 31 2020 | 1.3.1 |
+
+## :memo: License
+This project is under MIT license. Check the file [LICENSE](LICENSE) for more information.
