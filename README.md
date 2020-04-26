@@ -13,7 +13,7 @@
 ## :calendar: Release Notes
 | :rocket: Kick Off | Last Deploy | Version |
 |---|---|---|
-| Feb 29 2020 | Mar 31 2020 | 1.3.1 |
+| Feb 29 2020 | Mar 31 2020 | 1.4.1 |
 
 ## :memo: License
 This project is under MIT license. Check the file [LICENSE](LICENSE) for more information.
