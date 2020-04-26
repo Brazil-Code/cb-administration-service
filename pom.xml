@@ -17,6 +17,10 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<model-service-lib.version>0.0.1-SNAPSHOT</model-service-lib.version>
+		<jjwt.version>0.7.0</jjwt.version>
+		<swagger.version>2.9.2</swagger.version>
+		<lombok.version>1.18.10</lombok.version>
 	</properties>
 
 	<dependencies>
@@ -64,14 +68,14 @@
 		<dependency>
 			<groupId>br.com.brazilcode.cb.libs</groupId>
 			<artifactId>cb-model-service-lib</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${model-service-lib.version}</version>
 		</dependency>
 
 		<!-- JWT Lib -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
-			<version>0.7.0</version>
+			<version>${jjwt.version}</version>
 		</dependency>
 
 		<!-- Log 4j Lib -->
@@ -84,14 +88,21 @@
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
-			<version>2.9.2</version>
+			<version>${swagger.version}</version>
 		</dependency>
 
 		<!-- Swagger UI -->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.9.2</version>
+			<version>${swagger.version}</version>
+		</dependency>
+
+		<!-- Lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 	</dependencies>
 

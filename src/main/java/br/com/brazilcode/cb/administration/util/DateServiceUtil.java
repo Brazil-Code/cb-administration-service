@@ -7,17 +7,17 @@ import java.util.GregorianCalendar;
 import org.springframework.stereotype.Service;
 
 /**
- * Classe utilitária para datas.
+ * Utility class for data conversion.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 29 de fev de 2020 18:05:52
+ * @since Apr 26, 2020 2:36:58 PM
  * @version 1.0
  */
 @Service
 public class DateServiceUtil {
 
 	/**
-	 * Método responsável por incrementar a data e hora atual.
+	 * Method responsible for incrementing current timestamp.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param data

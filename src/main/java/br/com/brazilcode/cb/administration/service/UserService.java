@@ -5,8 +5,6 @@ import java.sql.Timestamp;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,73 +14,76 @@ import br.com.brazilcode.cb.administration.exception.UserValidationException;
 import br.com.brazilcode.cb.libs.exception.ResourceNotFoundException;
 import br.com.brazilcode.cb.libs.model.User;
 import br.com.brazilcode.cb.libs.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Classe de serviço para Users.
+ * Service class for {@link User}s.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 12 de mar de 2020 00:10:08
- * @version 1.4
+ * @since Apr 26, 2020 2:31:29 PM
+ * @version 2.0
  */
 @Service
+@Slf4j
 public class UserService implements Serializable {
 
 	private static final long serialVersionUID = 246320449672499635L;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
 	@Autowired
 	private UserRepository userDAO;
 
 	/**
-	 * Método responsável por verificar se o {@link User} existe pelo ID informado.
+	 * Method responsible for verifying whether {@link User} exists by the given 'ID'.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param id
 	 * @return
+	 * @throws ResourceNotFoundException if user not found
 	 */
 	public User verifyIfExists(Long id) throws ResourceNotFoundException {
 		return userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException(", User not found for the given ID: " + id));
 	}
 
 	/**
-	 * Método responsável por buscar um User pelo seu username.
+	 * Method responsible for searching for an {@link User} by the given 'username'.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param username
 	 * @return
+	 * @throws ResourceNotFoundException if user not found
 	 */
 	public User findByUsername(String username) throws ResourceNotFoundException {
 		return this.userDAO.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(", User not found for the given username: " + username));
+				.orElseThrow(() -> new ResourceNotFoundException(", User not found for the given username:  " + username));
 	}
 
 	/**
-	 * Método responsável por atualizar um {@link User} aplicando as regras de validação (verificação de campos unique).
+	 * Method responsible for updating a {@link User} applying the validation rules (verification of unique fields).
 	 *
 	 * @author Brazil Code - Gabriel Guarido
+	 * @param id
 	 * @param userDTO
 	 * @throws Exception
 	 */
 	public void update(final Long id, final UserDTO userDTO) throws Exception {
 		final String method = "[ UserService.update ] - ";
-		LOGGER.debug(method + "BEGIN");
+		log.info(method + "BEGIN");
 
 		try {
-			LOGGER.debug(method + "Validating received data: " + userDTO.toString());
+			log.info(method + "Validating received data: " + userDTO.toString());
 			User user = this.validateReceivedData(id, userDTO);
 
 			this.userDAO.save(user);
 		} catch (Exception e) {
-			LOGGER.error(method + e.getMessage(), e);
+			log.error(method + e.getMessage(), e);
 			throw e;
 		} finally {
-			LOGGER.debug(method + "END");
+			log.info(method + "END");
 		}
 	}
 
 	/**
-	 * Método responsável por validar os dados recebidos.
+	 * Method responsible for validating the received data.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param id
@@ -92,19 +93,19 @@ public class UserService implements Serializable {
 	 */
 	private User validateReceivedData(Long id, UserDTO userDTO) throws Exception {
 		final String method = "[ UserService.validateReceivedData ] - ";
-		LOGGER.debug(method + "BEGIN");
+		log.info(method + "BEGIN");
 
 		try {
-			LOGGER.debug(method + "Validating mandatory fields");
+			log.info(method + "Validating mandatory fields");
 			this.validateMandatoryFields(userDTO);
 
-			LOGGER.debug(method + "Verifying if user exists - ID: " + id);
+			log.info(method + "Verifying if user exists - ID: " + id);
 			User currentUser = this.verifyIfExists(id);
 			User updatedUser;
 
-			LOGGER.debug(method + "Verifying if email have already been taken");
+			log.info(method + "Verifying if email have already been taken");
 			if (!this.emailHasAlreadyBeenTaken(currentUser.getEmail(), userDTO.getEmail())) {
-				LOGGER.debug(method + "Converting DTO to entity");
+				log.info(method + "Converting DTO to entity");
 				updatedUser = this.convertDtoToEntity(currentUser, userDTO);
 
 				return updatedUser;
@@ -112,15 +113,15 @@ public class UserService implements Serializable {
 				throw new UniqueContraintValidationException(", The given e-mail has already been taken");
 			}
 		} catch (Exception e) {
-			LOGGER.error(method + e.getMessage(), e);
+			log.error(method + e.getMessage(), e);
 			throw e;
 		} finally {
-			LOGGER.debug(method + "END");
+			log.info(method + "END");
 		}
 	}
 
 	/**
-	 * Método responsável por validar os campos obrigatórios para atualização de um {@link User}.
+	 * Method responsible for validating the mandatory fields for updating an {@link User}.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param userDTO
@@ -128,7 +129,7 @@ public class UserService implements Serializable {
 	 */
 	private void validateMandatoryFields(UserDTO userDTO) throws UserValidationException {
 		final String method = "[ UserService.validateMandatoryFields ] - ";
-		LOGGER.debug(method + "BEGIN");
+		log.info(method + "BEGIN");
 
 		StringBuilder warnings = new StringBuilder();
 
@@ -145,18 +146,19 @@ public class UserService implements Serializable {
 		}
 
 		if (warnings.length() > 1) {
-			LOGGER.error(method + "Validation warnings" + warnings.toString());
+			log.error(method + "Validation warnings" + warnings.toString());
 			throw new UserValidationException(warnings.toString());
 		}
 
-		LOGGER.debug(method + "END");
+		log.info(method + "END");
 	}
 
 	/**
-	 * Método responsável por verificar seo username informado já está cadastrado no banco de dados.
+	 * Method responsible for verifying whether the informed 'email' is already registered in the database.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
-	 * @param username
+	 * @param currentEmail
+	 * @param newEmail
 	 * @return
 	 */
 	private boolean emailHasAlreadyBeenTaken(String currentEmail, String newEmail) {
@@ -170,16 +172,16 @@ public class UserService implements Serializable {
 	}
 
 	/**
-	 * Método responsável por converter um objeto {@link UserDTO} em entidade {@link User} fazendo as devidades veificações.
+	 * Method responsible for converting an {@link UserDTO} object into an {@link User} entity by doing the proper checks.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
+	 * @param user
 	 * @param userDTO
-	 * @param id
 	 * @return
 	 */
 	private User convertDtoToEntity(User user, UserDTO userDTO) {
 		final String method = "[ UserService.convertDtoToEntity ] - ";
-		LOGGER.debug(method + "BEGIN");
+		log.info(method + "BEGIN");
 
 		try {
 			user.setFirstName(userDTO.getFirstName());
@@ -189,10 +191,10 @@ public class UserService implements Serializable {
 
 			return user;
 		} catch (Exception e) {
-			LOGGER.error(method + e.getMessage(), e);
+			log.error(method + e.getMessage(), e);
 			throw e;
 		} finally {
-			LOGGER.debug(method + "END");
+			log.info(method + "END");
 		}
 	}
 

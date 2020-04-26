@@ -19,10 +19,10 @@ import io.jsonwebtoken.Jwts;
 import static br.com.brazilcode.cb.administration.constants.SecurityConstants.*;
 
 /**
- * Classe responsável por configurar e aplicar o filtro de autorização JWT.
+ * Class responsible for configuring and applying the JWT authorization filter.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 29 de fev de 2020 17:35:17
+ * @since Apr 26, 2020 2:14:21 PM
  * @version 1.0
  */
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
@@ -35,13 +35,14 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 		String header = request.getHeader(HEADER_STRING);
+
 		if (header == null || !header.startsWith(TOKEN_PREFIX)) {
 			chain.doFilter(request, response);
 			return;
 		}
+
 		UsernamePasswordAuthenticationToken authenticationToken = getAuthenticationToken(request);
 		SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 		chain.doFilter(request, response);
@@ -56,10 +57,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	 */
 	private UsernamePasswordAuthenticationToken getAuthenticationToken(HttpServletRequest request) {
 		String token = request.getHeader(HEADER_STRING);
-		if (token == null)
+
+		if (token == null) {
 			return null;
-		String username = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody()
-				.getSubject();
+		}
+
+		String username = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody().getSubject();
 		UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
 		return username != null ? new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()) : null;
 	}

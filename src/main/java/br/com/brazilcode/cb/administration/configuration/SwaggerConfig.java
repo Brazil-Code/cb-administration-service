@@ -23,10 +23,10 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * Classe responsável por configurar o uso do Swagger na aplicação.
+ * Class responsible for configuring Swagger in the application.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 20 de mar de 2020 19:38:42
+ * @since Apr 26, 2020 2:04:13 PM
  * @version 1.0
  */
 @Configuration

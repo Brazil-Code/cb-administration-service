@@ -7,8 +7,6 @@ import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,29 +30,29 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Classe responsável por expor as APIs para Logs.
+ * Class responsible for exposing the APIs to Logs.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 11 de mar de 2020 23:10:05
- * @version 1.2
+ * @since Apr 26, 2020 2:07:08 PM
+ * @version 2.0
  */
 @RestController
 @RequestMapping("logs")
 @Api(value = "REST API for Logs")
 @CrossOrigin(origins = "*")
+@Slf4j
 public class LogController implements Serializable {
 
 	private static final long serialVersionUID = 5226137304754768180L;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(LogController.class);
 
 	@Autowired
 	private LogService logService;
 
 	/**
-	 * Método responsável por buscar um {@link Log}.
+	 * Method responsible for searching for a {@link Log}.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param id
@@ -69,31 +67,31 @@ public class LogController implements Serializable {
 	@ApiOperation(value = "Search for a Log in database with the given ID")
 	public ResponseEntity<?> findById(@PathVariable("id") final Long id) {
 		final String method = "[ LogController.findById ] - ";
-		LOGGER.debug(method + "BEGIN");
+		log.info(method + "BEGIN");
 
 		try {
-			LOGGER.debug(method + "Calling logService.verifyIfExists - ID: " + id);
+			log.info(method + "Calling logService.verifyIfExists - ID: " + id);
 			final Log log = logService.verifyIfExists(id);
 
 			return new ResponseEntity<Log>(log, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
-			LOGGER.error(method + errorMessage, e);
+			log.error(method + errorMessage, e);
 			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			LOGGER.error(method + e.getMessage(), e);
+			log.error(method + e.getMessage(), e);
 			return new ResponseEntity<>(new InternalServerErrorResponseObject(), HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
-			LOGGER.debug(method + "END");
+			log.info(method + "END");
 		}
 	}
 
 	/**
-	 * Método responsável por salvar um Log.
+	 * Method responsible for saving a {@link Log}.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param requestContext
-	 * @param logAuditoria
+	 * @param logDTO
 	 * @return
 	 */
 	@PostMapping
@@ -105,23 +103,23 @@ public class LogController implements Serializable {
 	@ApiOperation(value = "Register a new Log")
 	public ResponseEntity<?> save(HttpServletRequest requestContext, @Valid @RequestBody final LogDTO logDTO) {
 		final String method = "[ LogController.save ] - ";
-		LOGGER.debug(method + "BEGIN");
+		log.info(method + "BEGIN");
 
 		try {
-			LOGGER.debug(method + "Calling logService.save... sending: " + logDTO.toString());
+			log.info(method + "Calling logService.save... sending: " + logDTO.toString());
 			Log log = this.logService.save(logDTO, requestContext);
 
 			return new ResponseEntity<>(new CreatedResponseObject(log.getId()), HttpStatus.CREATED);
 		} catch (LogValidationException e) {
 			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
-			LOGGER.debug(method + errorMessage, e);
+			log.info(method + errorMessage, e);
 			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
-			LOGGER.debug(method + errorMessage, e);
+			log.info(method + errorMessage, e);
 			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
-			LOGGER.debug(method + "END");
+			log.info(method + "END");
 		}
 	}
 
