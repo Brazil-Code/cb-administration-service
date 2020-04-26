@@ -11,10 +11,10 @@ import br.com.brazilcode.cb.administration.filter.JWTAuthorizationFilter;
 import br.com.brazilcode.cb.administration.service.CustomUserDetailService;
 
 /**
- * Classe responsável por aplicar a camada de segurança JWT na aplicação - URLs de acesso ao Swagger estão na whitelist.
+ * Class responsible for applying JWT security layer to the application - Swagger access URLs are in the white list.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 12 de mar de 2020 00:35:31
+ * @since Apr 26, 2020 2:02:36 PM
  * @version 1.0
  */
 @EnableWebSecurity
@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_WHITELIST).permitAll()
 				.anyRequest().authenticated()
 				.and()
-				// Filtrando outras requisições para checar se o JWT está adicionado ao header
+				// Filtering other requests to check if the JWT is added to the header
 				.addFilter(new JWTAuthorizationFilter(authenticationManager(), customUserDetailService));
 	}
 	

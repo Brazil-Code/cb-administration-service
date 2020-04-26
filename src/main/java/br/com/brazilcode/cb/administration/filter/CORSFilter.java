@@ -18,10 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
- * Classe responsável por configurar a aplicar o filtro de CORS.
+ * Class responsible for configuring and applying the CORS filter.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 29 de fev de 2020 17:50:33
+ * @since Apr 26, 2020 2:13:55 PM
  * @version 1.0
  */
 @Component

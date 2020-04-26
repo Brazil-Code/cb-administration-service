@@ -2,14 +2,20 @@ package br.com.brazilcode.cb.administration.dto;
 
 import br.com.brazilcode.cb.libs.model.User;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Classe responsável por agrupar informações sobre {@link User}.
+ * Class responsible for grouping information about {@link User}.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 29 de mar de 2020 14:07:35
- * @version 1.0
+ * @since Apr 26, 2020 2:03:38 PM
+ * @version 2.0
  */
+@Getter
+@Setter
+@ToString
 public class UserDTO {
 
 	@ApiModelProperty(value = "User's first name")
@@ -20,34 +26,5 @@ public class UserDTO {
 
 	@ApiModelProperty(value = "User's e-mail")
 	private String email;
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	@Override
-	public String toString() {
-		return "UserDTO [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + "]";
-	}
 
 }

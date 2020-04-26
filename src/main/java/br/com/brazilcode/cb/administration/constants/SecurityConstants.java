@@ -1,10 +1,10 @@
 package br.com.brazilcode.cb.administration.constants;
 
 /**
- * Classe responsável por armazenar as informações de segurança da aplicação.
+ * Class responsible for storing application security information.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 29 de fev de 2020 17:29:11
+ * @since Apr 26, 2020 2:05:08 PM
  * @version 1.0
  */
 public class SecurityConstants {

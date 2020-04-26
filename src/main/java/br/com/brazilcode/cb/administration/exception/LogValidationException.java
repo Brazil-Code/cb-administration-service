@@ -1,21 +1,19 @@
 package br.com.brazilcode.cb.administration.exception;
 
 import br.com.brazilcode.cb.libs.model.Log;
+import lombok.NoArgsConstructor;
 
 /**
- * Classe responsável por configurar uma exceção personalizada para validação de {@link Log}.
+ * Class responsible for configuring a custom exception for {@link Log} validation.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 11 de mar de 2020 23:48:37
- * @version 1.0
+ * @since Apr 26, 2020 2:12:39 PM
+ * @version 1.1
  */
+@NoArgsConstructor
 public class LogValidationException extends Exception {
 
 	private static final long serialVersionUID = -1456098986528080299L;
-
-	public LogValidationException() {
-		super();
-	}
 
 	public LogValidationException(String message) {
 		super(message);

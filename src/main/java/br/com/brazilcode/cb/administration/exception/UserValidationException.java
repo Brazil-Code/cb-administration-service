@@ -1,21 +1,19 @@
 package br.com.brazilcode.cb.administration.exception;
 
 import br.com.brazilcode.cb.libs.model.User;
+import lombok.NoArgsConstructor;
 
 /**
- * Classe responsável por configurar uma exceção personalizada para validação de campos obrigatórios para {@link User}.
+ * Class responsible for setting up a custom exception for validating mandatory fields for {@link User}.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 29 de mar de 2020 16:51:02
- * @version 1.0
+ * @since Apr 26, 2020 2:13:31 PM
+ * @version 1.1
  */
+@NoArgsConstructor
 public class UserValidationException extends Exception {
 
 	private static final long serialVersionUID = -6033272630611017800L;
-
-	public UserValidationException() {
-		super();
-	}
 
 	public UserValidationException(String message) {
 		super(message);

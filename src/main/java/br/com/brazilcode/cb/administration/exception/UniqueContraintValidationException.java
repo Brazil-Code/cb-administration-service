@@ -1,19 +1,18 @@
 package br.com.brazilcode.cb.administration.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
- * Classe responsável por configurar uma exceção personalizada para validação de campos unique.
+ * Class responsible for configuring a custom exception for validating unique fields.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 29 de mar de 2020 16:28:31
- * @version 1.0
+ * @since Apr 26, 2020 2:13:09 PM
+ * @version 1.1
  */
+@NoArgsConstructor
 public class UniqueContraintValidationException extends Exception {
 
 	private static final long serialVersionUID = -5473340082425474058L;
-
-	public UniqueContraintValidationException() {
-		super();
-	}
 
 	public UniqueContraintValidationException(String message) {
 		super(message);

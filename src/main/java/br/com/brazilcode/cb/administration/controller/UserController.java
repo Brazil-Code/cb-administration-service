@@ -7,8 +7,6 @@ import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,23 +35,23 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Classe responsável por expor as APIs para Users.
+ * Class responsible for exposing the APIs to {@link User}s.
  *
  * @author Brazil Code - Gabriel Guarido
- * @since 17 de mar de 2020 22:19:49
- * @version 1.2
+ * @since Apr 26, 2020 2:08:35 PM
+ * @version 2.0
  */
 @RestController
 @RequestMapping("users")
 @Api(value = "REST API for Users")
 @CrossOrigin(origins = "*")
+@Slf4j
 public class UserController implements Serializable {
 
 	private static final long serialVersionUID = 34855461917907245L;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	private UserService userService;
@@ -62,9 +60,10 @@ public class UserController implements Serializable {
 	private LogService logService;
 
 	/**
-	 * Método responsável por verificar se o ID do usuário informado está cadastrado no banco de dados.
+	 * Method responsible for searching for a {@link User} in database with the given 'ID'.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
+	 * @param requestContext
 	 * @param id
 	 * @return
 	 */
@@ -77,28 +76,28 @@ public class UserController implements Serializable {
 	@ApiOperation(value = "Search for a User in database with the given ID")
 	public ResponseEntity<?> verifyIfExist(HttpServletRequest requestContext, @PathVariable("id") final Long id) {
 		final String method = "[ UserController.verifyIfExist ] - ";
-		LOGGER.debug(method + "BEGIN");
-		LOGGER.debug(method + "received ID: " + id);
+		log.info(method + "BEGIN");
+		log.info(method + "received ID: " + id);
 
 		try {
-			LOGGER.debug(method + "Calling userService.verifyIfExists");
+			log.info(method + "Calling userService.verifyIfExists");
 			User user = this.userService.verifyIfExists(id);
 
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
-			LOGGER.error(method + errorMessage, e);
+			log.error(method + errorMessage, e);
 			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			LOGGER.error(method + e.getMessage(), e);
+			log.error(method + e.getMessage(), e);
 			return new ResponseEntity<>(new InternalServerErrorResponseObject(), HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
-			LOGGER.debug(method + "END");
+			log.info(method + "END");
 		}
 	}
 
 	/**
-	 * Método responsável por buscar um {@link User} no banco de dados, filtrando pelo username informado.
+	 * Method responsible for searching for a {@link User} in the database by the given 'username'.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param username
@@ -113,28 +112,28 @@ public class UserController implements Serializable {
 	@ApiOperation(value = "Search for a User in database with the given username")
 	public ResponseEntity<?> findByUsername(@RequestParam(name = "username", required = true) final String username) {
 		final String method = "[ UserController.findByUsername ] - ";
-		LOGGER.debug(method + "BEGIN");
-		LOGGER.debug(method + "Received Username: " + username);
+		log.info(method + "BEGIN");
+		log.info(method + "Received Username: " + username);
 
 		try {
-			LOGGER.debug(method + "Calling userService.findByUsername");
+			log.info(method + "Calling userService.findByUsername");
 			User user = this.userService.findByUsername(username);
 
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
 			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
-			LOGGER.error(method + errorMessage, e);
+			log.error(method + errorMessage, e);
 			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			LOGGER.error(method + e.getMessage(), e);
+			log.error(method + e.getMessage(), e);
 			return new ResponseEntity<>(new InternalServerErrorResponseObject(), HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
-			LOGGER.debug(method + "END");
+			log.info(method + "END");
 		}
 	}
 
 	/**
-	 * Método responsável por atualizar as informações de um {@link User} pelo ID e dados informados.
+	 * Method responsible for updating the information of a {@link User} by the given 'ID' and data.
 	 *
 	 * @author Brazil Code - Gabriel Guarido
 	 * @param id
@@ -152,13 +151,13 @@ public class UserController implements Serializable {
 	public ResponseEntity<?> update(@PathVariable("id") final Long id, @Valid @RequestBody final UserDTO userDTO, 
 			HttpServletRequest request) {
 		final String method = "[ UserController.update ] - ";
-		LOGGER.debug(method + "BEGIN");
+		log.info(method + "BEGIN");
 
 		try {
-			LOGGER.debug(method + "Calling userService.update");
+			log.info(method + "Calling userService.update");
 			this.userService.update(id, userDTO);
 
-			LOGGER.debug(method + "Registering activity log");
+			log.info(method + "Registering activity log");
 			final String description = LogActivityTypeEnum.UPDATE.getDescription() + " as informações do seu perfil";
 			LogDTO logDTO = new LogDTO(id, description);
 			this.logService.save(logDTO, request);
@@ -166,17 +165,17 @@ public class UserController implements Serializable {
 			return new ResponseEntity<>(new UpdatedResponseObject(id), HttpStatus.OK);
 		} catch (UserValidationException e) {
 			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
-			LOGGER.error(method + errorMessage, e);
+			log.error(method + errorMessage, e);
 			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
 		} catch (UniqueContraintValidationException e) {
 			final String errorMessage = VALIDATION_ERROR_RESPONSE + e.getMessage();
-			LOGGER.error(method + errorMessage, e);
+			log.error(method + errorMessage, e);
 			return new ResponseEntity<>(new BadRequestResponseObject(errorMessage), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			LOGGER.error(method + e.getMessage(), e);
+			log.error(method + e.getMessage(), e);
 			return new ResponseEntity<>(new InternalServerErrorResponseObject(), HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
-			LOGGER.debug(method + "END");
+			log.info(method + "END");
 		}
 	}
 
